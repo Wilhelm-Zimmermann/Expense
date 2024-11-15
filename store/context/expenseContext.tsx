@@ -1,103 +1,120 @@
-import {
+import  {
     useContext,
     useState,
-    createContext
+    createContext,
+    ReactNode
 } from "react";
+import {
+    IExpense
+} from "../../shared/interfaces/IExpense";
 
-const ExpenseContext = createContext({
-    expenses: [],
-    addExpense: () => {},
-    removeExpense: (id) => {},
-    updateExpense: (id, { description, amount, date }) => {},
-});
+interface ExpenseProviderProps {
+    children: ReactNode;
+}
 
-export const ExpenseProvider = ({ children }) => {
-    const initialExpenses = [
+interface ExpenseContextData {
+    expenses: IExpense[];
+    addExpense: (payload: IExpense) => void;
+    removeExpense: (id: number) => void;
+    updateExpense: (payload: IExpense) => void;
+    getLastExpense: () => IExpense;
+}
+
+const ExpenseContext = createContext<ExpenseContextData>({} as ExpenseContextData);
+
+export const ExpenseProvider = ({ children }:ExpenseProviderProps) : ReactNode => {
+    const initialExpenses: IExpense[] = [
         {
-            id: "1",
+            id: 1,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "2",
+            id: 2,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "3",
+            id: 3,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "4",
+            id: 4,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "5",
+            id: 5,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "6",
+            id: 6,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "7",
+            id: 7,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "8",
+            id: 8,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
         {
-            id: "9",
+            id: 9,
             description: "This is a random expense",
             amount: 15,
             date: new Date(),
         },
     ]
 
-    const [expenses, setExpenses] = useState(initialExpenses);
+    const [expenses, setExpenses] = useState<IExpense[]>(initialExpenses);
 
-    const addExpense = () => {
-        setExpenses(prevState => [...prevState, expenses]);
+    const addExpense = (payload: IExpense) => {
+        setExpenses(prevState => [...prevState, payload]);
     }
 
-    const removeExpense = (id) => {
+    const removeExpense = (id:number) => {
         setExpenses(prevState => prevState.filter(x => x.id !== id));
     }
 
-    const updateExpense = (id, expenseEdit) => {
+    const updateExpense = (payload: IExpense) => {
         setExpenses(prevState => prevState.map(expense => {
-            if (expense.id === id) {
+            if (expense.id === payload.id) {
                 return {
                     ...expense,
-                    description: expenseEdit.description,
-                    date: expenseEdit.date,
-                    amount: expenseEdit.amount,
+                    description: payload.description,
+                    date: payload.date,
+                    amount: payload.amount,
                 };
             }
             return expense;
         }));
     }
 
-    return <ExpenseContext.Provider value={{ addExpense, removeExpense, updateExpense,  expenses }}>
+    const getLastExpense = () :IExpense => {
+        return expenses[expenses.length - 1];
+    }
+
+    return (
+        <ExpenseContext.Provider value={{ addExpense, removeExpense, updateExpense,  expenses, getLastExpense }}>
             {children}
         </ExpenseContext.Provider>
+    )
 }
 
-export const useExpense = () => {
+export const useExpense = (): ExpenseContextData => {
     return useContext(ExpenseContext);
 }

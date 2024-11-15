@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 export const StackNavigation = () => {
     return (
-        <Stack.Navigator id={"StackNavigation"} screenOptions={{
+        <Stack.Navigator id={undefined} screenOptions={{
             headerStyle: {
                 backgroundColor: "#351401",
             },

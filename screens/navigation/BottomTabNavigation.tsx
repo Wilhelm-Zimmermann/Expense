@@ -15,7 +15,7 @@ const BottomTab = createBottomTabNavigator();
 
 export const BottomTabNavigation = () => {
     return (
-        <BottomTab.Navigator id={"BottomTabNavigation"} screenOptions={{
+        <BottomTab.Navigator id={undefined} screenOptions={{
             headerStyle: {
                 backgroundColor: "#37188c",
             },

@@ -48,12 +48,12 @@ export const ExpensesScreen = () => {
             <View style={styles.container}>
                 <FlatList
                     data={expenses}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.id?.toString()}
                     renderItem={({item}) => <ExpenseItem item={item} />}
                 />
             </View>
 
-            <ExpenseModal visible={isExpenseModalOpen} onClose={handleToggleExpenseModal} />
+            <ExpenseModal action={"create"} visible={isExpenseModalOpen} onClose={handleToggleExpenseModal} />
         </>
     )
 }

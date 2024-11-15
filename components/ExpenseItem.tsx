@@ -11,8 +11,15 @@ import {
 import {
     useExpense
 } from "../store/context/expenseContext";
+import {
+    IExpense
+} from "../shared/interfaces/IExpense";
 
-export const ExpenseItem = ({item}) => {
+interface ExpenseItemProps {
+    item: IExpense;
+}
+
+export const ExpenseItem = ({item}:ExpenseItemProps) => {
     const { removeExpense } = useExpense();
 
     return (
@@ -21,11 +28,11 @@ export const ExpenseItem = ({item}) => {
                 <Text style={styles.title}>{item.description}</Text>
                 <Text style={[styles.title, {marginTop: 4}]}>{item.date.toLocaleDateString('en-GB')}</Text>
             </View>
-            <View style={styles.priceContainer}>
+            <View>
                 <Text style={[styles.title, styles.priceAmount ]}>R$ {item.amount}</Text>
             </View>
             <View>
-                <ActionButton  icon="trash-outline" color="#eb4034" size={24} onPress={() => removeExpense(item.id)}/>
+                <ActionButton icon="trash-outline" color="#eb4034" size={24} onPress={() => removeExpense(item.id)}/>
             </View>
         </Pressable>
     )
@@ -43,7 +50,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowOffset: { width: 0, height: 1 },
         shadowRadius: 8,
-        overflow: Platform.OS === "android" && "hidden",
         borderRadius: 4,
         justifyContent: "space-between",
         alignItems: "center",
