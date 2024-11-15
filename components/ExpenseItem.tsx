@@ -14,27 +14,36 @@ import {
 import {
     IExpense
 } from "../shared/interfaces/IExpense";
+import {
+    ExpenseModal
+} from "./ExpenseModal";
+import {
+    useState
+} from "react";
 
 interface ExpenseItemProps {
     item: IExpense;
+    handleEditExpense: (id: IExpense) => void;
 }
 
-export const ExpenseItem = ({item}:ExpenseItemProps) => {
+export const ExpenseItem = ({ item, handleEditExpense }:ExpenseItemProps) => {
     const { removeExpense } = useExpense();
 
     return (
-        <Pressable style={styles.container}>
-            <View>
-                <Text style={styles.title}>{item.description}</Text>
-                <Text style={[styles.title, {marginTop: 4}]}>{item.date.toLocaleDateString('en-GB')}</Text>
-            </View>
-            <View>
-                <Text style={[styles.title, styles.priceAmount ]}>R$ {item.amount}</Text>
-            </View>
-            <View>
-                <ActionButton icon="trash-outline" color="#eb4034" size={24} onPress={() => removeExpense(item.id)}/>
-            </View>
-        </Pressable>
+        <>
+            <Pressable style={styles.container} onPress={() => handleEditExpense(item)}>
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.title}>{item.description}</Text>
+                    <Text style={[styles.title, {marginTop: 4}]}>{item.date?.toLocaleDateString('en-GB')}</Text>
+                </View>
+                <View style={styles.amountContainer}>
+                    <Text style={[styles.title, styles.priceAmount ]}>R$ {item.amount}</Text>
+                </View>
+                <View style={styles.trashContainer}>
+                    <ActionButton icon="trash-outline" color="#eb4034" size={24} onPress={() => removeExpense(item.id)}/>
+                </View>
+            </Pressable>
+        </>
     )
 }
 
@@ -56,6 +65,17 @@ const styles = StyleSheet.create({
     },
     title: {
         color: "white",
+    },
+    descriptionContainer: {
+        width: "70%",
+    },
+    amountContainer: {
+        width: "18%",
+    },
+    trashContainer: {
+        width: "7%",
+        alignSelf: "center",
+        justifyContent: "center",
     },
     priceAmount: {
         fontSize: 18,

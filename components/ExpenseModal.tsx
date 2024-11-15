@@ -12,6 +12,7 @@ import {
 } from "../store/context/expenseContext";
 import {
     useCallback,
+    useEffect,
     useState
 } from "react";
 import {
@@ -22,23 +23,33 @@ interface ExpenseModalProps {
     visible: boolean;
     onClose: () => void;
     action: "create" | "update";
+    expenseData: IExpense;
 }
 
-export const ExpenseModal = ({ visible, onClose, action }: ExpenseModalProps) => {
-    const [expense, setExpense] = useState<IExpense>({
-        description: "",
-        amount: 0,
-    } as IExpense);
-    const { addExpense, getLastExpense } = useExpense();
+export const ExpenseModal = ({ visible, onClose, action, expenseData }: ExpenseModalProps) => {
+    const [expense, setExpense] = useState<IExpense>(expenseData);
+    const { addExpense, updateExpense, getLastExpense } = useExpense();
 
-    const handleAddExpense = () => {
+    useEffect(() => {
+        setExpense(expenseData);
+    }, [action, expenseData]);
+
+    const handleExpense = () => {
         const lastExpenseId = getLastExpense().id;
-        console.log(expense);
-        setExpense({
-            ...expense,
-            id: lastExpenseId + 1,
-            date: new Date(),
-        });
+        if(action === "create") {
+            setExpense({
+                ...expense,
+                id: lastExpenseId + 1,
+                date: new Date(),
+            });
+            addExpense(expense);
+        } else {
+            updateExpense(expense);
+        }
+        onClose();
+    }
+
+    const handleCancel = () => {
         onClose();
     }
 
@@ -46,14 +57,27 @@ export const ExpenseModal = ({ visible, onClose, action }: ExpenseModalProps) =>
         <SafeAreaView>
             <Modal animationType="slide" visible={visible} onRequestClose={onClose}>
                 <View style={styles.container}>
-                    <TextInput value={expense.description} placeholder="Expense description" placeholderTextColor="white" style={styles.textInput} onChangeText={value => setExpense({ ...expense, description: value })} />
-                    <TextInput value={expense.amount?.toString()} placeholder="Expense amount" placeholderTextColor="white" keyboardType="number-pad" style={styles.textInput} onChangeText={value => setExpense({ ...expense, amount: parseFloat(value) })} />
+                    <TextInput
+                        value={expense.description}
+                        placeholder="Expense description"
+                        placeholderTextColor="white"
+                        style={styles.textInput}
+                        onChangeText={value => setExpense({ ...expense, description: value })}
+                    />
+                    <TextInput
+                        value={expense.amount?.toString()}
+                        placeholder="Expense amount"
+                        placeholderTextColor="white"
+                        keyboardType="number-pad"
+                        style={styles.textInput}
+                        onChangeText={value => setExpense({ ...expense, amount: parseFloat((value == "" || !value) ? "0" : value) })}
+                    />
                     <View style={styles.buttonsContainer}>
                         <View style={styles.button}>
-                            <Button title="Cancel" onPress={onClose} color="#eb4034"/>
+                            <Button title="Cancel" onPress={handleCancel} color="#eb4034"/>
                         </View>
                         <View style={styles.button}>
-                            <Button title="Create" onPress={handleAddExpense} />
+                            <Button title={action == "create" ? "Create" : "Update"} onPress={handleExpense} />
                         </View>
                     </View>
                 </View>

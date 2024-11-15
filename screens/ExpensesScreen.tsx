@@ -24,21 +24,49 @@ import {
 import {
     ExpenseModal
 } from "../components/ExpenseModal";
+import {
+    IExpense
+} from "../shared/interfaces/IExpense";
 
 
 export const ExpensesScreen = () => {
     const { expenses } = useExpense();
     const { setOptions } = useNavigation();
+    const [expense, setExpense] = useState<IExpense>({
+        description: "",
+        amount: 0,
+        id: 0,
+        date: new Date(),
+    });
+    const [modalAction, setModalAction] = useState<"create"|"update">("create");
+
     const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
     const handleToggleExpenseModal = () => {
         setIsExpenseModalOpen(!isExpenseModalOpen);
     }
 
+    const handleCreateExpense = () => {
+        setModalAction("create");
+        setExpense({
+            description: "",
+            amount: 0,
+            id: 0,
+            date: new Date(),
+        });
+        handleToggleExpenseModal();
+    }
+
+    const handleEditExpense = (expenseData: IExpense) => {
+        setExpense(expenseData);
+        setModalAction("update");
+        handleToggleExpenseModal();
+    }
+
     useLayoutEffect(() => {
         setOptions({
             headerRight: () => {
-                return <ActionButton styles={{marginRight: 8}} icon="add-outline" color="white" size={24} onPress={handleToggleExpenseModal}/>
+                return <ActionButton styles={{marginRight: 8}} icon="add-outline" color="white" size={24} onPress={handleCreateExpense}/>
             }
         })
     }, [])
@@ -48,12 +76,15 @@ export const ExpensesScreen = () => {
             <View style={styles.container}>
                 <FlatList
                     data={expenses}
-                    keyExtractor={(item) => item.id?.toString()}
-                    renderItem={({item}) => <ExpenseItem item={item} />}
+                    keyExtractor={(item) => {
+                        console.log(item.id)
+                        return item.id?.toString()
+                    }}
+                    renderItem={({item}) => <ExpenseItem item={item} handleEditExpense={handleEditExpense}/>}
                 />
             </View>
 
-            <ExpenseModal action={"create"} visible={isExpenseModalOpen} onClose={handleToggleExpenseModal} />
+            <ExpenseModal action={modalAction} expenseData={expense} visible={isExpenseModalOpen} onClose={handleToggleExpenseModal} />
         </>
     )
 }
